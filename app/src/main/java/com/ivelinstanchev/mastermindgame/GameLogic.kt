@@ -11,14 +11,16 @@ data class LetterResult(
 
 object GameLogic {
 
+    const val GAME_LENGTH = 4
+
     fun evaluateGuess(secret: String, guess: String): List<LetterResult> {
-        require(secret.length == 4 && guess.length == 4)
+        require(secret.length == GAME_LENGTH && guess.length == GAME_LENGTH)
 
         val secretChars = secret.toCharArray()
         val guessChars = guess.toCharArray()
         val results = mutableListOf<LetterResult>()
 
-        for (i in 0..3) {
+        for (i in 0 until GAME_LENGTH) {
             when {
                 guessChars[i] == secretChars[i] -> {
                     results.add(LetterResult(guessChars[i], BoxColor.GREEN))
@@ -38,7 +40,7 @@ object GameLogic {
     }
 
     fun generateSecret(): String {
-        return (1..4)
+        return (1..GAME_LENGTH)
             .map { ('A'..'Z').random() }
             .joinToString("")
     }

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 data class GameState(
     val secret: String = "",
-    val guess: List<Char> = listOf(' ', ' ', ' ', ' '),
+    val guess: List<Char> = List(GameLogic.GAME_LENGTH) { ' ' },
     val results: List<LetterResult> = emptyList()
 )
 
@@ -24,7 +24,7 @@ class MastermindViewModel : ViewModel() {
 
     fun checkGuess() {
         val guessString = _state.value.guess.joinToString("").replace(" ", "")
-        if (guessString.length == 4) {
+        if (guessString.length == GameLogic.GAME_LENGTH) {
             val results = GameLogic.evaluateGuess(_state.value.secret, guessString)
             _state.value = _state.value.copy(results = results)
         }

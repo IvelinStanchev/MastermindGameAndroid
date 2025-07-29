@@ -15,7 +15,7 @@ class GameViewModelTest {
         val vm = MastermindViewModel()
         val state = vm.state.first()
 
-        assertEquals(4, state.secret.length)
+        assertEquals(GameLogic.GAME_LENGTH, state.secret.length)
         assertEquals(listOf(' ', ' ', ' ', ' '), state.guess)
         assertEquals(emptyList<LetterResult>(), state.results)
     }
@@ -24,27 +24,27 @@ class GameViewModelTest {
     fun `onLetterChange should update guess at correct index`() = runTest {
         val vm = MastermindViewModel()
 
-        vm.onLetterChange(0, 'a')
-        vm.onLetterChange(1, 'b')
-        vm.onLetterChange(2, 'c')
-        vm.onLetterChange(3, 'd')
+        val uppercased = mutableListOf<Char>()
+        for (i in 0 until GameLogic.GAME_LENGTH) {
+            vm.onLetterChange(i, 'a' + i)
+            uppercased.add('A' + i)
+        }
 
         val updated = vm.state.first()
-        assertEquals(listOf('A', 'B', 'C', 'D'), updated.guess)
+        assertEquals(uppercased, updated.guess)
     }
 
     @Test
     fun `checkGuess should produce results for valid guess`() = runTest {
         val vm = MastermindViewModel()
 
-        val secret = "ABCD"
+        val secret = GameLogic.generateSecret()
         val initial = vm.state.first()
-        vm.onLetterChange(0, 'A')
-        vm.onLetterChange(1, 'B')
-        vm.onLetterChange(2, 'C')
-        vm.onLetterChange(3, 'D')
+        secret.forEachIndexed { index, char ->
+            vm.onLetterChange(index, char)
+        }
 
-        val manualState = initial.copy(secret = secret, guess = listOf('A', 'B', 'C', 'D'))
+        val manualState = initial.copy(secret = secret, guess = secret.toCharArray().toList())
         val field = MastermindViewModel::class.java.getDeclaredField("_state")
         field.isAccessible = true
         @Suppress("UNCHECKED_CAST")
@@ -54,11 +54,10 @@ class GameViewModelTest {
         vm.checkGuess()
         val resultState = vm.state.first()
 
-        assertEquals(4, resultState.results.size)
-        assertEquals(BoxColor.GREEN, resultState.results[0].color)
-        assertEquals(BoxColor.GREEN, resultState.results[1].color)
-        assertEquals(BoxColor.GREEN, resultState.results[2].color)
-        assertEquals(BoxColor.GREEN, resultState.results[3].color)
+        assertEquals(GameLogic.GAME_LENGTH, resultState.results.size)
+        for (i in 0 until GameLogic.GAME_LENGTH) {
+            assertEquals(BoxColor.GREEN, resultState.results[i].color)
+        }
     }
 
     @Test
