@@ -15,8 +15,9 @@ class GameViewModelTest {
         val vm = MastermindViewModel()
         val state = vm.state.first()
 
+        val initialGuess = List(GameLogic.GAME_LENGTH) { ' ' }
         assertEquals(GameLogic.GAME_LENGTH, state.secret.length)
-        assertEquals(listOf(' ', ' ', ' ', ' '), state.guess)
+        assertEquals(initialGuess, state.guess)
         assertEquals(emptyList<LetterResult>(), state.results)
     }
 
